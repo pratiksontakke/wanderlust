@@ -1,0 +1,137 @@
+<% layout("/layouts/boilerplate") %>
+<div class="row mt-3">
+    <div class="col-8 offset-3">
+        <h3><%= listing.title %></h3>
+    </div>
+    <div class="card col-6 offset-3 show-card">
+        <img
+            src="<%= listing.image.url%>"
+            class="card-img-top show-img"
+            alt="><%= listing._id %>"
+        />
+        <div class="card-body">
+            <p class="card-text">
+                owned by : <b><i>@<%= listing.owner.username %> </i></b>
+            </p>
+            <p class="card-text"><%= listing.description %></p>
+            <p class="card-text">
+                &#8377; <%= listing.price.toLocaleString("en-IN"); %>
+            </p>
+            <p class="card-text"><%= listing.country %></p>
+            <p class="card-text"><%= listing.location %></p>
+        </div>
+    </div>
+    <br />
+</div>
+
+<% if(currUser && currUser._id.equals(listing.owner._id)) { %>
+<div class="btns">
+    <a
+        href="/listings/<%=listing._id%>/edit"
+        class="btn btn-dark col-1 offset-3 edit-btn"
+        >Edit</a
+    >
+    <form action="/listings/<%=listing._id%>?_method=DELETE" method="POST">
+        <button class="btn btn-dark offset-5">Delete</button>
+    </form>
+</div>
+<% } %>
+
+<!-- // reviews form -->
+<% if(currUser) { %>
+<div class="col-6 offset-3 mt-5">
+    <h4>Leave a Review</h4>
+    <form
+        action="/listings/<%=listing._id%>/reviews"
+        method="POST"
+        novalidate
+        class="needs-validation mt-4"
+    >
+        <div class="mb-3">
+            <label for="comment" class="form-label">Comment</label>
+            <textarea
+                class="form-control"
+                placeholder="Leave a comment here"
+                id="comment"
+                style="height: 100px"
+                name="review[comment]"
+                required
+            ></textarea>
+            <div class="valid-feedback">comment looks good!</div>
+            <div class="invalid-feedback">Please add a comment!</div>
+        </div>
+        <div class="mb-3 col-md-4">
+            <label for="rating" class="form-label">Rating</label>
+            <fieldset class="starability-slot">
+                <input
+                    type="radio"
+                    id="no-rate"
+                    class="input-no-rate"
+                    name="review[rating]"
+                    value="1"
+                    checked
+                    aria-label="No rating."
+                />
+                <input type="radio" id="first-rate1" name="review[rating]" value="1" />
+                <label for="first-rate1" title="Terrible">1 star</label>
+                <input type="radio" id="first-rate2" name="review[rating]" value="2" />
+                <label for="first-rate2" title="Not good">2 stars</label>
+                <input type="radio" id="first-rate3" name="review[rating]" value="3" />
+                <label for="first-rate3" title="Average">3 stars</label>
+                <input type="radio" id="first-rate4" name="review[rating]" value="4" />
+                <label for="first-rate4" title="Very good">4 stars</label>
+                <input type="radio" id="first-rate5" name="review[rating]" value="5" />
+                <label for="first-rate5" title="Amazing">5 stars</label>
+            </fieldset>
+        </div>
+        <button class="btn btn-dark add-btn mt-3 mb-3">Add</button>
+    </form>
+</div>
+<% } %>
+
+<!-- //reviews : -->
+<% if(listing.reviews.length>0) { %>
+<div class="row d-flex justify-content-center">
+    <div class="col-md-10 col-xl-8 text-center">
+        <h3 class="mb-4">Reviews</h3>
+        <!-- <p class="mb-4 pb-2 mb-md-5 pb-md-0">
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Fugit,
+                error amet numquam iure provident voluptate esse quasi,
+                veritatis totam voluptas nostrum quisquam eum porro a pariatur
+                veniam.
+            </p> -->
+    </div>
+</div>
+<div class="row text-center">
+    <% for(let review of listing.reviews.sort((a, b) => b.rating - a.rating)) {
+    %>
+    <div class="col-md-4 mb-4">
+        <!--<div class="d-flex justify-content-center mb-4">
+                <img
+                    src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(9).webp"
+                    class="rounded-circle shadow-1-strong"
+                    width="150"
+                    height="150"
+                />
+            </div> -->
+        <h5 class="mb-3">@<%=review.author.username%></h5>
+        <!-- <h6 class="text-primary mb-3">Marketing Specialist</h6> -->
+        <p class="px-xl-3">
+            <i class="fas fa-quote-left pe-2"></i><%=review.comment%>
+        </p>
+        <ul class="list-unstyled d-flex justify-content-center mb-0">
+            <p
+                class="starability-result"
+                data-rating="<%= review.rating %>"
+            ></p>
+        </ul>
+        <form
+            action="/listings/<%=listing._id%>/reviews/<%=review._id%>?_method=DELETE"
+            method="POST"
+        >
+            <button class="btn btn-dark add-btn mt-3 mb-3">Delete</button>
+        </form>
+    </div>
+    <% } %>
+</div>
+<% } %>
